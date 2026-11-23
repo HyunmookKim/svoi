@@ -6,7 +6,6 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { defineSecret, defineString } = require('firebase-functions/params');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
@@ -16,8 +15,7 @@ admin.initializeApp();
 setGlobalOptions({ region: 'asia-northeast3', maxInstances: 5 });
 const db = admin.firestore();
 const translator = new Translate();
-const TG_TOKEN = defineSecret('TG_TOKEN');
-const TG_CHANNEL = defineString('TG_CHANNEL', { default: '' });
+// 텔레그램 봇 토큰·채널은 운영자가 앱의 운영자 화면에서 config/telegram 에 넣는다 (운영자만 읽고 쓸 수 있다)
 const APP_URL = 'https://hyunmookkim.github.io/svoi/';
 const sha = s => crypto.createHash('sha1').update(s).digest('hex');
 
@@ -39,13 +37,14 @@ exports.tr = onCall({ memory: '256MiB' }, async req => {
   return { text: await translateText(text, to) };
 });
 
-exports.newsToTg = onDocumentWritten({ document: 'news/{id}', secrets: [TG_TOKEN] }, async ev => {
+exports.newsToTg = onDocumentWritten({ document: 'news/{id}' }, async ev => {
   const after = ev.data && ev.data.after;
   if(!after || !after.exists) return;
   const n = after.data();
   if(n.status !== 'ok' || n.tg) return;
-  const channel = TG_CHANNEL.value();
-  const token = TG_TOKEN.value();
+  const cfg = await db.collection('config').doc('telegram').get();
+  const channel = cfg.exists ? String(cfg.data().channel || '').trim() : '';
+  const token = cfg.exists ? String(cfg.data().token || '').trim() : '';
   if(!channel || !token) return;
   // 두 번 올리지 않게 먼저 표시한다
   const ok = await db.runTransaction(async tx => {

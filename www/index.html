@@ -285,7 +285,11 @@ const I18N = { ru: {
   '러시아어판 확인일':'Дата проверки RU', '한국어판 확인일':'Дата проверки KO',
   '링크':'Ссылка', '대기':'Ожидает',
   '공개 상태':'Статус', '공개 중':'Опубликовано', '숨김':'Скрыто',
-  '본문 쓰는 법: ## 소제목, - 목록, 빈 줄은 문단':'Формат: ## подзаголовок, - список, пустая строка — абзац'
+  '본문 쓰는 법: ## 소제목, - 목록, 빈 줄은 문단':'Формат: ## подзаголовок, - список, пустая строка — абзац',
+  '텔레그램·소식 수집 설정':'Telegram и сбор новостей', '채널 주소':'Адрес канала', '봇 토큰':'Токен бота',
+  '저장되어 있음 — 바꿀 때만 입력':'Сохранён — вводите только для замены',
+  '봇을 채널 관리자로 넣어야 올라갑니다. 공개한 소식만 한 번씩 올립니다.':'Бот должен быть администратором канала. Каждая опубликованная новость отправляется один раз.',
+  '한 줄에 하나: 주소 | 출처 이름. 6시간마다 모아 「대기」로 넣습니다.':'По одной в строке: адрес | название источника. Сбор каждые 6 часов, новости попадают в «Ожидает».'
 } };
 function langFromDevice(){
   try{
@@ -1433,10 +1437,42 @@ async function deleteAccount(){
 function openAdmin(){
   if(!(ME && ME.admin)) return;
   push(t('운영자'), () => {
-    page().innerHTML = [['adRep','신고 목록'],['adBiz','업소 심사'],['adNews','소식 관리'],['adGuide','문서 관리']].map(x =>
+    page().innerHTML = [['adRep','신고 목록'],['adBiz','업소 심사'],['adNews','소식 관리'],['adGuide','문서 관리'],['adCfg','텔레그램·소식 수집 설정']].map(x =>
       '<button class="row" id="' + x[0] + '"><b>' + esc(t(x[1])) + '</b></button>').join('');
     $('adRep').onclick = adminReports; $('adBiz').onclick = adminBiz; $('adNews').onclick = adminNews; $('adGuide').onclick = adminGuides;
+    $('adCfg').onclick = adminConfig;
   });
+}
+// 텔레그램 채널 자동 게시 · RSS 소식 수집 주소 (토큰은 화면에 다시 보여 주지 않는다)
+function adminConfig(){
+  push(t('텔레그램·소식 수집 설정'), () => withLoad(page(), async () => {
+    const [tg, nw] = await Promise.all([FB.F.getDoc(dref('config', 'telegram')), FB.F.getDoc(dref('config', 'news'))]);
+    return { tg: tg.exists() ? tg.data() : {}, feeds: nw.exists() ? (nw.data().feeds || []) : [] };
+  }, ({ tg, feeds }) => {
+    const box = page();
+    box.innerHTML = '<div class="card"><h2>Telegram</h2>' +
+      '<label class="f">' + esc(t('채널 주소')) + '</label><input id="cfCh" placeholder="@svoi_korea" value="' + esc(tg.channel || '') + '">' +
+      '<label class="f">' + esc(t('봇 토큰')) + '</label><input id="cfTok" type="password" autocomplete="off" placeholder="' +
+        esc(tg.token ? t('저장되어 있음 — 바꿀 때만 입력') : '123456:ABC…') + '">' +
+      '<p class="muted small" style="margin-top:6px">' + esc(t('봇을 채널 관리자로 넣어야 올라갑니다. 공개한 소식만 한 번씩 올립니다.')) + '</p>' +
+      '<button class="btn wide" id="cfTgGo">' + esc(t('저장')) + '</button></div>' +
+      '<div class="card"><h2>RSS</h2><p class="muted small">' + esc(t('한 줄에 하나: 주소 | 출처 이름. 6시간마다 모아 「대기」로 넣습니다.')) + '</p>' +
+      '<textarea id="cfFeeds" style="margin-top:8px">' + esc(feeds.map(f => f.url + (f.src ? ' | ' + f.src : '')).join('\n')) + '</textarea>' +
+      '<button class="btn wide" id="cfFdGo">' + esc(t('저장')) + '</button></div>';
+    $('cfTgGo').onclick = async () => {
+      const d = { channel: $('cfCh').value.trim() };
+      const tok = $('cfTok').value.trim(); if(tok) d.token = tok;
+      await FB.F.setDoc(dref('config', 'telegram'), d, { merge: true });
+      $('cfTok').value = ''; tell(t('저장했습니다'));
+    };
+    $('cfFdGo').onclick = async () => {
+      const list = $('cfFeeds').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+        const [url, src] = l.split('|').map(x => x.trim()); return { url, src: src || '' };
+      }).filter(f => /^https?:\/\//.test(f.url));
+      await FB.F.setDoc(dref('config', 'news'), { feeds: list }, { merge: true });
+      tell(t('저장했습니다'));
+    };
+  }));
 }
 function adminReports(){
   push(t('신고 목록'), () => withLoad(page(), async () => {
