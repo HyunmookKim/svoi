@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<!-- Свои 0.1 -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F5FBF">
+<title>Свои — жизнь в Корее</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F4F6F9; --card:#FFFFFF; --ink:#1B2430; --sub:#5B6676; --line:#E2E7EE;
+  --main:#1F5FBF; --mainS:#E8F0FC; --warn:#C0392B; --ok:#1E8E5A;
+  --top:env(safe-area-inset-top,0px); --bot:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo",sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+/* ── 위 띠 */
+#top{position:fixed;left:0;right:0;top:0;z-index:20;background:var(--main);color:#fff;
+  padding:calc(var(--top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px}
+#top h1{font-size:20px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#top .back{display:none;width:40px;height:40px;margin-left:-8px;font-size:24px;line-height:40px;text-align:center}
+#top.sub .back{display:block}
+#langBtn{min-width:48px;height:36px;padding:0 10px;border:1px solid rgba(255,255,255,.55);border-radius:18px;
+  font-size:14px;font-weight:700}
+/* ── 몸통 */
+main{padding:calc(var(--top) + 64px) 14px calc(var(--bot) + 84px);max-width:720px;margin:0 auto}
+.screen{display:none}
+.screen.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:17px;font-weight:800;margin-bottom:6px}
+.muted{color:var(--sub);font-size:14px}
+.empty{padding:36px 16px;text-align:center;color:var(--sub)}
+/* 분류 칸 */
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;
+  min-height:76px;display:flex;flex-direction:column;gap:4px}
+.cat b{font-size:16px}
+.cat span{font-size:13px;color:var(--sub)}
+.cat:active{background:var(--mainS)}
+/* 목록 줄 */
+.row{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.row b{display:block;font-size:16px}
+.row small{color:var(--sub);font-size:13px}
+/* 아래 탭 */
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);
+  display:flex;padding-bottom:var(--bot)}
+#tabs button{flex:1;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;font-size:12px;color:var(--sub)}
+#tabs button i{font-style:normal;font-size:21px;line-height:1}
+#tabs button.on{color:var(--main);font-weight:700}
+/* 언어 고르기 창 */
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;display:none;align-items:flex-end}
+#sheet.on{display:flex}
+#sheet .box{background:#fff;width:100%;border-radius:18px 18px 0 0;padding:18px 16px calc(var(--bot) + 18px)}
+#sheet .box h3{font-size:17px;margin-bottom:10px}
+#sheet .opt{display:block;width:100%;text-align:left;padding:14px;border-radius:12px;border:1px solid var(--line);
+  margin-bottom:8px;font-size:16px}
+#sheet .opt.on{border-color:var(--main);background:var(--mainS);font-weight:700}
+/* 알림 띠 */
+#toast{position:fixed;left:16px;right:16px;bottom:calc(var(--bot) + 76px);z-index:50;background:#222;color:#fff;
+  padding:12px 14px;border-radius:12px;font-size:15px;display:none}
+#toast.on{display:block}
+</style>
+</head>
+<body>
+<header id="top">
+  <button class="back" id="backBtn" aria-label="back">‹</button>
+  <h1 id="title">Свои</h1>
+  <button id="langBtn"></button>
+</header>
+
+<main>
+  <section class="screen" id="s-home"></section>
+  <section class="screen" id="s-guides"></section>
+  <section class="screen" id="s-guideList"></section>
+  <section class="screen" id="s-guide"></section>
+  <section class="screen" id="s-qa"></section>
+  <section class="screen" id="s-biz"></section>
+  <section class="screen" id="s-more"></section>
+</main>
+
+<nav id="tabs">
+  <button data-tab="home"><i>⌂</i><span data-t="홈"></span></button>
+  <button data-tab="guides"><i>☰</i><span data-t="정보"></span></button>
+  <button data-tab="qa"><i>?</i><span data-t="질문"></span></button>
+  <button data-tab="biz"><i>⌖</i><span data-t="업소"></span></button>
+  <button data-tab="more"><i>⋯</i><span data-t="더보기"></span></button>
+</nav>
+
+<div id="sheet"><div class="box" id="sheetBox"></div></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+const APP_VER = '0.1';
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 말 (한국어·러시아어)
+//   열쇠는 한국어 원문이다 (뱃일과 같은 방식). 러시아어 사전에 없으면 한국어가 그대로 나온다.
+//   ★ 이번 앱은 러시아어가 주인이다. 처음 켤 때 폰 말이 한국어일 때만 한국어로 연다.
+// ══════════════════════════════════════════════════════════════════════
+const LANGS = [ { v:'ru', name:'Русский' }, { v:'ko', name:'한국어' } ];
+const I18N = { ru: {
+  '홈':'Главная', '정보':'Справка', '질문':'Вопросы', '업소':'Места', '더보기':'Ещё',
+  '언어':'Язык', '언어 고르기':'Выберите язык',
+  '한국생활 정보':'Жизнь в Корее',
+  '분류':'Разделы',
+  '체류·비자':'Пребывание и визы', '일·노동':'Работа', '보험·병원':'Страховка и врачи',
+  '돈':'Деньги', '집':'Жильё', '결혼·가족':'Брак и семья', '아이·학교':'Дети и школа',
+  '교통·운전':'Транспорт и права', '긴급':'Экстренная помощь',
+  '연장·변경·외국인등록':'Продление, смена статуса, ID-карта',
+  '임금·산재·퇴직금':'Зарплата, травмы, выходное пособие',
+  '건강보험·병원 이용':'Медстраховка и больницы',
+  '은행·송금·세금':'Банк, переводы, налоги',
+  '계약·보증금·전입':'Договор, депозит, прописка',
+  'F-6·귀화·초청':'F-6, гражданство, приглашение',
+  '입학·한국어 학급':'Поступление, классы корейского',
+  '면허 교환·대중교통':'Обмен прав, транспорт',
+  '112·119·1345':'112, 119, 1345',
+  '아직 문서가 없습니다':'Статей пока нет',
+  '곧 채워집니다. 궁금한 것은 질문 탭에 남겨 주세요.':'Скоро здесь появятся статьи. Свой вопрос можно задать во вкладке «Вопросы».',
+  '오늘의 소식':'Новости дня',
+  '많이 본 문서':'Популярные статьи',
+  '답을 기다리는 질문':'Вопросы без ответа',
+  '준비 중입니다':'В разработке',
+  '마지막 확인':'Проверено',
+  '공식 확인처':'Официальный источник',
+  '이 문서로 해결이 안 됐으면 질문하기':'Не нашли ответ? Задайте вопрос',
+  '개인 사안은 1345(외국인종합안내센터)나 행정사에게 꼭 확인하세요.':'По личной ситуации обязательно уточните в 1345 (центр для иностранцев) или у специалиста (행정사).',
+  '긴급 연락처':'Экстренные номера',
+  '앱 정보':'О приложении',
+  '버전':'Версия'
+} };
+function langFromDevice(){
+  try{
+    const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+    for(const raw of list){
+      const v = String(raw || '').slice(0,2).toLowerCase();
+      if(v === 'ko') return 'ko';
+      if(['ru','uk','kk','uz','ky','be','tg','az','hy','ka','tk'].indexOf(v) >= 0) return 'ru';
+    }
+  }catch(_){}
+  return 'ru';
+}
+function langNow(){
+  try{ const v = localStorage.getItem('sv_lang'); if(v && LANGS.some(x=>x.v===v)) return v; }catch(_){}
+  return langFromDevice();
+}
+function t(s){
+  const k = String(s == null ? '' : s);
+  const v = langNow();
+  if(v === 'ko') return k;
+  const d = I18N[v] || {};
+  return d[k] || k;
+}
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// 화면에 박힌 data-t 글자를 지금 말로 다시 칠한다
+function paintStatic(){
+  document.documentElement.lang = langNow();
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.getAttribute('data-t')); });
+  document.getElementById('langBtn').textContent = langNow() === 'ru' ? 'RU' : '한';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 알림 띠 (뱃일 tell 과 같은 자리)
+// ══════════════════════════════════════════════════════════════════════
+let toastTimer = 0;
+function tell(msg, ms){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=> el.classList.remove('on'), ms || 3000);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 정보 문서 분류
+//   문서는 서버(guides)에서 받는다 — 2단계에서 붙인다. 지금은 빈 목록이다.
+// ══════════════════════════════════════════════════════════════════════
+const GUIDE_CATS = [
+  { id:'stay',   name:'체류·비자',   hint:'연장·변경·외국인등록' },
+  { id:'work',   name:'일·노동',     hint:'임금·산재·퇴직금' },
+  { id:'health', name:'보험·병원',   hint:'건강보험·병원 이용' },
+  { id:'money',  name:'돈',          hint:'은행·송금·세금' },
+  { id:'home',   name:'집',          hint:'계약·보증금·전입' },
+  { id:'family', name:'결혼·가족',   hint:'F-6·귀화·초청' },
+  { id:'kids',   name:'아이·학교',   hint:'입학·한국어 학급' },
+  { id:'move',   name:'교통·운전',   hint:'면허 교환·대중교통' },
+  { id:'sos',    name:'긴급',        hint:'112·119·1345' }
+];
+let GUIDES = [];   // { id, cat, title:{ru,ko}, body:{ru,ko}, checked, src }
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 화면 이동 — 탭 하나와 그 안의 깊은 화면들. 뒤로 가기는 쌓인 순서대로.
+// ══════════════════════════════════════════════════════════════════════
+const ROOT = { home:'s-home', guides:'s-guides', qa:'s-qa', biz:'s-biz', more:'s-more' };
+let curTab = 'home';
+let stack = [];        // [{ id, title, render }]
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+  window.scrollTo(0, 0);
+}
+function setTitle(txt, isSub){
+  document.getElementById('title').textContent = txt;
+  document.getElementById('top').classList.toggle('sub', !!isSub);
+}
+function openTab(tab){
+  curTab = tab; stack = [];
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  RENDER[tab]();
+  show(ROOT[tab]);
+  setTitle(tab === 'home' ? 'Свои' : t(TAB_NAME[tab]), false);
+}
+const TAB_NAME = { home:'홈', guides:'정보', qa:'질문', biz:'업소', more:'더보기' };
+function push(id, title, render){
+  stack.push({ id, title, render });
+  render(); show(id); setTitle(title, true);
+  try{ history.pushState({ d: stack.length }, ''); }catch(_){}
+}
+function back(){
+  if(!stack.length) return false;
+  stack.pop();
+  if(stack.length){ const top = stack[stack.length-1]; top.render(); show(top.id); setTitle(top.title, true); }
+  else openTab(curTab);
+  return true;
+}
+window.addEventListener('popstate', () => { back(); });
+document.getElementById('backBtn').onclick = () => { history.back(); };
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 각 화면 그리기
+// ══════════════════════════════════════════════════════════════════════
+function renderHome(){
+  document.getElementById('s-home').innerHTML =
+    '<div class="card"><h2>' + esc(t('오늘의 소식')) + '</h2><p class="muted">' + esc(t('준비 중입니다')) + '</p></div>' +
+    '<div class="card"><h2>' + esc(t('많이 본 문서')) + '</h2><p class="muted">' + esc(t('준비 중입니다')) + '</p></div>' +
+    '<div class="card"><h2>' + esc(t('답을 기다리는 질문')) + '</h2><p class="muted">' + esc(t('준비 중입니다')) + '</p></div>';
+}
+function renderGuides(){
+  const box = document.getElementById('s-guides');
+  box.innerHTML = '<div class="cats">' + GUIDE_CATS.map(c =>
+    '<button class="cat" data-cat="' + c.id + '"><b>' + esc(t(c.name)) + '</b><span>' + esc(t(c.hint)) + '</span></button>'
+  ).join('') + '</div>';
+  box.querySelectorAll('.cat').forEach(b => b.onclick = () => openCat(b.dataset.cat));
+}
+function openCat(catId){
+  const c = GUIDE_CATS.find(x => x.id === catId);
+  push('s-guideList', t(c.name), () => {
+    const list = GUIDES.filter(g => g.cat === catId);
+    const box = document.getElementById('s-guideList');
+    if(!list.length){
+      box.innerHTML = '<div class="empty"><p><b>' + esc(t('아직 문서가 없습니다')) + '</b></p><p>' +
+        esc(t('곧 채워집니다. 궁금한 것은 질문 탭에 남겨 주세요.')) + '</p></div>';
+      return;
+    }
+    const L = langNow();
+    box.innerHTML = list.map(g => '<button class="row" data-id="' + esc(g.id) + '"><b>' +
+      esc((g.title && (g.title[L] || g.title.ko)) || '') + '</b><small>' + esc(t('마지막 확인')) + ' ' + esc(g.checked || '') +
+      '</small></button>').join('');
+    box.querySelectorAll('.row').forEach(b => b.onclick = () => openGuide(b.dataset.id));
+  });
+}
+function openGuide(id){
+  const g = GUIDES.find(x => x.id === id); if(!g) return;
+  const L = langNow();
+  push('s-guide', (g.title && (g.title[L] || g.title.ko)) || '', () => {
+    const body = (g.body && (g.body[L] || g.body.ko)) || '';
+    document.getElementById('s-guide').innerHTML =
+      '<div class="card"><div class="gbody">' + esc(body).replace(/\n/g,'<br>') + '</div></div>' +
+      '<div class="card muted">' + esc(t('마지막 확인')) + ': ' + esc(g.checked || '') +
+      (g.src ? '<br>' + esc(t('공식 확인처')) + ': <a href="' + esc(g.src) + '" target="_blank" rel="noopener">' + esc(g.src) + '</a>' : '') +
+      '<br><br>' + esc(t('개인 사안은 1345(외국인종합안내센터)나 행정사에게 꼭 확인하세요.')) + '</div>';
+  });
+}
+function renderQa(){
+  document.getElementById('s-qa').innerHTML = '<div class="empty">' + esc(t('준비 중입니다')) + '</div>';
+}
+function renderBiz(){
+  document.getElementById('s-biz').innerHTML = '<div class="empty">' + esc(t('준비 중입니다')) + '</div>';
+}
+function renderMore(){
+  document.getElementById('s-more').innerHTML =
+    '<button class="row" id="mLang"><b>' + esc(t('언어')) + '</b><small>' +
+      esc((LANGS.find(x => x.v === langNow()) || {}).name || '') + '</small></button>' +
+    '<div class="card"><h2>' + esc(t('긴급 연락처')) + '</h2>' +
+      '<p>112 — Police / 경찰<br>119 — Fire, ambulance / 소방·구급<br>1345 — Immigration contact center / 외국인종합안내센터<br>1577-1366 — Danuri / 다누리</p></div>' +
+    '<div class="card muted">' + esc(t('앱 정보')) + ' · ' + esc(t('버전')) + ' ' + APP_VER + '</div>';
+  document.getElementById('mLang').onclick = pickLang;
+}
+const RENDER = { home:renderHome, guides:renderGuides, qa:renderQa, biz:renderBiz, more:renderMore };
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 언어 고르기 — 아래에서 올라오는 창 (prompt 쓰지 않는다)
+// ══════════════════════════════════════════════════════════════════════
+function pickLang(){
+  const box = document.getElementById('sheetBox');
+  box.innerHTML = '<h3>' + esc(t('언어 고르기')) + '</h3>' + LANGS.map(l =>
+    '<button class="opt' + (l.v === langNow() ? ' on' : '') + '" data-v="' + l.v + '">' + esc(l.name) + '</button>').join('');
+  box.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    try{ localStorage.setItem('sv_lang', b.dataset.v); }catch(_){}
+    closeSheet(); paintStatic(); openTab(curTab);
+  });
+  document.getElementById('sheet').classList.add('on');
+}
+function closeSheet(){ document.getElementById('sheet').classList.remove('on'); }
+document.getElementById('sheet').onclick = e => { if(e.target.id === 'sheet') closeSheet(); };
+document.getElementById('langBtn').onclick = pickLang;
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 시작
+// ══════════════════════════════════════════════════════════════════════
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => openTab(b.dataset.tab));
+paintStatic();
+openTab('home');
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
