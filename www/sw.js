@@ -1,5 +1,5 @@
-// Свои 0.2 — 캐시 이름은 앱 버전(APP_VER)과 반드시 같아야 한다
-const CACHE = 'svoi-0.2';
+// Свои 0.3 — 캐시 이름은 앱 버전(APP_VER)과 반드시 같아야 한다
+const CACHE = 'svoi-0.3';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
