@@ -1,4 +1,5 @@
 name: Deploy www to GitHub Pages
+# Свои 웹 배포
 on:
   push:
     branches: [main]
