@@ -1,0 +1,84 @@
+rules_version = '2';
+// Свои 0.2 — Firestore 보안 규칙
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed(){ return request.auth != null; }
+    function me(){ return request.auth.uid; }
+    function admin(){ return signed() && exists(/databases/$(database)/documents/admins/$(me())); }
+    function banned(){ return exists(/databases/$(database)/documents/bans/$(me())); }
+    function ok(){ return signed() && !banned() && exists(/databases/$(database)/documents/users/$(me())); }
+    function str(v, n){ return v is string && v.size() <= n; }
+    function nd(){ return request.resource.data; }
+    function changed(){ return nd().diff(resource.data).affectedKeys(); }
+
+    // 사람 — 자기 것만
+    match /users/{uid} {
+      allow read, delete: if signed() && me() == uid;
+      allow create, update: if signed() && me() == uid && str(nd().name, 20) && nd().name.size() >= 2
+        && (!('blocked' in nd()) || (nd().blocked is list && nd().blocked.size() <= 500));
+    }
+    match /admins/{uid} { allow read: if signed() && me() == uid; allow write: if false; }
+    match /bans/{uid}   { allow read: if signed() && (me() == uid || admin()); allow write: if admin(); }
+
+    // 정보 문서 — 운영자만 쓴다. 누구나 조회수 +1
+    match /guides/{id} {
+      allow read: if resource.data.pub == true || admin();
+      allow create, delete: if admin();
+      allow update: if admin() || (changed().hasOnly(['views']) && nd().views == resource.data.get('views', 0) + 1);
+    }
+
+    // 질문
+    match /posts/{id} {
+      allow read: if true;
+      allow create: if ok() && nd().uid == me() && str(nd().title, 120) && nd().title.size() > 0
+        && str(nd().body, 5000) && str(nd().name, 20) && nd().answers == 0 && nd().solved == false && nd().hidden == false
+        && nd().photos is list && nd().photos.size() <= 3;
+      allow update: if admin()
+        || (ok() && resource.data.uid == me() && nd().uid == me()
+            && changed().hasOnly(['title','body','cat','solved','photos','edited','name'])
+            && str(nd().title, 120) && str(nd().body, 5000) && nd().photos.size() <= 3)
+        || (signed() && resource.data.uid == me() && changed().hasOnly(['name']))
+        || (ok() && changed().hasOnly(['answers','last'])
+            && (nd().answers == resource.data.answers + 1 || nd().answers == resource.data.answers - 1));
+      allow delete: if admin() || (signed() && resource.data.uid == me());
+
+      match /answers/{aid} {
+        allow read: if true;
+        allow create: if ok() && nd().uid == me() && str(nd().body, 5000) && nd().body.size() > 0
+          && str(nd().name, 20) && nd().helpfulBy.size() == 0 && nd().hidden == false;
+        allow update: if admin()
+          || (ok() && resource.data.uid == me() && changed().hasOnly(['body','guide','edited','name']))
+          || (signed() && resource.data.uid == me() && changed().hasOnly(['name']))
+          || (ok() && changed().hasOnly(['helpfulBy'])
+              && nd().helpfulBy.size() == resource.data.helpfulBy.size() + 1
+              && me() in nd().helpfulBy && !(me() in resource.data.helpfulBy));
+        allow delete: if admin() || (signed() && resource.data.uid == me());
+      }
+    }
+
+    // 신고 — 쓰기만, 읽기는 운영자
+    match /reports/{id} {
+      allow create: if signed() && nd().by == me() && str(nd().reason, 40) && str(nd().path, 300) && nd().open == true;
+      allow read, update, delete: if admin();
+    }
+
+    // 업소 — 주인은 심사 대기로만 올리고 고칠 수 있다. 공개·추천은 운영자
+    match /biz/{id} {
+      allow read: if resource.data.status == 'ok' || admin() || (signed() && resource.data.owner == me());
+      allow create: if ok() && nd().owner == me() && nd().status == 'pending' && nd().top == false
+        && str(nd().name, 80) && nd().name.size() > 0 && str(nd().bizNo, 10);
+      allow update: if admin()
+        || (ok() && resource.data.owner == me() && nd().owner == me() && nd().status == 'pending'
+            && nd().top == resource.data.get('top', false) && str(nd().name, 80));
+      allow delete: if admin() || (signed() && resource.data.owner == me());
+    }
+
+    // 소식 — 공개된 것만 누구나 읽는다
+    match /news/{id} {
+      allow read: if resource.data.status == 'ok' || admin();
+      allow write: if admin();
+    }
+    match /config/{id} { allow read, write: if admin(); }
+    // trcache 등 나머지는 서버 함수만 쓴다
+  }
+}

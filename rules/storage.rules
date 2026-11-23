@@ -1,0 +1,12 @@
+rules_version = '2';
+// Свои 0.2 — Storage 보안 규칙: 자기 폴더에 3MB 이하 사진만
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /u/{uid}/{file} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 3 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
