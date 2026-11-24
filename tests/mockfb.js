@@ -65,5 +65,14 @@ export const st = {
 };
 export const fn = {
   getFunctions: () => ({}),
-  httpsCallable: (f, name) => async d => { G.calls.push('fn ' + name); return { data: { text: '[' + d.to + '] ' + d.text } }; }
+  httpsCallable: (f, name) => async d => {
+    G.calls.push('fn ' + name);
+    if(name === 'explain'){
+      G.lastImages = d.images.length;
+      return { data: { left: 4, result: { isDocument: true, docType: 'Счёт за медстраховку', from: 'NHIS', summary: 'Взнос за ноябрь.',
+        actions: ['Оплатить до 10 декабря', 'Проверить счёт'], deadline: '10.12.2026', amount: '152 000 вон', contact: '1577-1000',
+        warnings: ['Долг мешает продлению визы'], urgency: 'high', fullText: '건강보험료 고지서', unsure: '' } } };
+    }
+    return { data: { text: '[' + d.to + '] ' + d.text } };
+  }
 };

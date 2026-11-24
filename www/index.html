@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Свои 0.3 -->
+<!-- Свои 0.4 -->
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -156,6 +156,47 @@ html[data-theme="dark"] .search input{border-color:var(--line)}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(var(--bot) + 84px);z-index:50;background:var(--ink);color:var(--bg);
   padding:14px 16px;border-radius:14px;font-size:15px;font-weight:600;display:none;max-width:680px;margin:0 auto;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 #toast.on{display:block;animation:up .2s ease}
+/* 홈 큰 단추 */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.hero button{background:var(--main);color:var(--onMain);border-radius:22px;padding:18px 16px;text-align:left;min-height:150px;
+  display:flex;flex-direction:column;gap:4px;transition:transform .1s}
+.hero button:active{transform:scale(.98)}
+.hero button:nth-child(2){background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+html[data-theme="dark"] .hero button:nth-child(2){border:1px solid var(--line)}
+.hero .ic{font-size:30px;margin-bottom:auto}
+.hero b{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+.hero span{font-size:12.5px;opacity:.72;line-height:1.35}
+h3.sec{font-size:14px;color:var(--sub);font-weight:700;margin:18px 4px 10px}
+/* 문장 목록 */
+.plist{padding:4px 18px}
+.phrase{display:block;width:100%;text-align:left;padding:14px 0;border-bottom:1px solid var(--line)}
+.phrase:last-child{border-bottom:0}
+.phrase b{display:block;font-size:18px;font-weight:700;letter-spacing:-.02em}
+.phrase small{display:block;color:var(--faint);font-size:13px;margin-top:2px}
+.phrase span{display:block;color:var(--sub);font-size:14px;margin-top:2px}
+.show{min-height:46vh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:24px 8px}
+.show .big{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.25;word-break:keep-all}
+.show .pron{font-size:17px;color:var(--sub);margin-top:16px}
+.show .mean{font-size:17px;color:var(--faint);margin-top:8px}
+.btn svg{width:20px;height:20px}
+/* 서류 풀이 */
+.pages{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.pages:empty{display:none}
+.pg{position:relative}
+.pg img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;background:var(--card2)}
+.pg button{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:13px;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:26px}
+.doc .lead{font-size:16.5px;line-height:1.6;margin:10px 0 6px}
+.doc h3{font-size:16px;font-weight:800;margin:16px 0 6px}
+.doc ul{padding-left:20px}
+.doc li{margin:5px 0}
+.kv{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+.kv span{flex:none;width:96px;color:var(--sub)}
+.kv b{flex:1;font-weight:700;word-break:break-word}
+.warnbox{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--warnS);color:var(--ink)}
+.warnbox b{color:var(--warn)}
+details{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+details summary{cursor:pointer;font-weight:700;color:var(--sub)}
+details .body{margin-top:10px;font-size:15px}
 </style>
 </head>
 <body>
@@ -188,7 +229,7 @@ html[data-theme="dark"] .search input{border-color:var(--line)}
 
 <script>
 'use strict';
-const APP_VER = '0.3';
+const APP_VER = '0.4';
 const CONSENT_VER = 1;
 const CONTACT_EMAIL = 'jaha814@gmail.com';
 const REGION = 'asia-northeast3';
@@ -327,7 +368,32 @@ const I18N = { ru: {
   // 소식
   '소식':'Новости', '원문':'Источник', '소식이 없습니다':'Новостей нет',
   // 카드
-  '단어 카드':'Карточки слов', '한국어 단어':'Корейский язык', '러시아어 단어':'Русский язык',
+  '서류 사진 풀이':'Разобрать документ по фото', '고지서·안내문·계약서를 러시아어로':'Счета, письма, договоры — по-русски',
+  '러시아어·한국어 서류를 쉬운 말로':'Документы на русском и корейском — простыми словами',
+  '한국어로 말하기':'Сказать по-корейски', '러시아어로 말하기':'Сказать по-русски', '보여 주고 들려주는 문장':'Покажите фразу или включите звук',
+  '하고 싶은 말을 쓰면 한국어로 바꿔 보여 줍니다':'Напишите, что хотите сказать, — покажем по-корейски',
+  '하고 싶은 말을 쓰면 러시아어로 바꿔 보여 줍니다':'Напишите, что хотите сказать, — покажем по-русски',
+  '예: 내일 오전에 와도 될까요?':'Например: можно прийти завтра утром?', '예: 오늘 저녁 같이 먹자':'Например: давай поужинаем вместе',
+  '바꾸기':'Перевести', '저장한 문장':'Сохранённые фразы', '상황별 문장':'Фразы по ситуациям', '문장':'фраз',
+  '보여 주기':'Показать', '소리 내 읽기':'Озвучить', '저장됨':'Сохранено',
+  '이 폰은 소리 읽기를 지원하지 않습니다':'Этот телефон не поддерживает озвучку',
+  '병원':'Больница', '약국':'Аптека', '출입국·주민센터':'Миграционная служба, 주민센터', '은행':'Банк', '일터':'Работа',
+  '집·집주인':'Жильё и хозяин', '택시·길':'Такси и дорога', '가게·식당':'Магазин и кафе', '어린이집·학교':'Садик и школа',
+  '아내에게':'Жене', '장인·장모님께':'Тестю и тёще', '집에서':'Дома', '아이에게':'Ребёнку', '축하할 때':'Поздравления',
+  '한국어 서류, 사진 한 장이면 됩니다':'Корейский документ? Хватит одного фото',
+  '고지서, 출입국 안내문, 계약서, 병원 영수증, 학교 알림, 문자 캡처 — 무엇인지, 무엇을 언제까지 해야 하는지 풀어 드립니다.':'Счёт, письмо из миграционной службы, договор, чек из больницы, сообщение из школы, скриншот SMS — объясним, что это и что нужно сделать и до какого срока.',
+  '사진 찍기':'Сфотографировать', '앨범에서':'Из галереи', '다음 장 찍기':'Снять следующую страницу', '풀어 보기':'Разобрать',
+  '한 번에 3장까지':'Не больше 3 страниц за раз', '읽는 중… 10~30초':'Читаю… 10–30 секунд',
+  '사진은 저장하지 않고 읽은 뒤 바로 지웁니다. 외국인등록번호·여권번호가 보이면 가리고 찍으세요.':'Фото не сохраняются — после прочтения сразу удаляются. Если виден номер ID-карты или паспорта, закройте его.',
+  '지난 풀이':'Прошлые разборы', '서류':'Документ',
+  '오늘 쓸 수 있는 횟수를 다 썼습니다. 내일 다시 쓸 수 있습니다.':'Лимит на сегодня исчерпан. Завтра снова можно.',
+  '읽지 못했습니다. 더 밝고 반듯하게 찍어 보세요.':'Не удалось прочитать. Сфотографируйте ровнее и при хорошем свете.',
+  '서류를 읽지 못했습니다':'Не получилось прочитать документ',
+  '급함':'Срочно', '중요':'Важно', '참고용':'Для информации', '기한':'Срок', '금액':'Сумма', '문의처':'Куда обращаться',
+  '해야 할 일':'Что нужно сделать', '주의':'Внимание', '잘 안 보인 부분':'Не удалось разобрать', '전체 번역 보기':'Полный перевод',
+  'AI가 읽은 내용이라 틀릴 수 있습니다. 돈·기한·체류가 걸린 일은 적힌 기관이나 1345에 꼭 확인하세요.':'Разбор сделан ИИ и может содержать ошибки. Если речь о деньгах, сроках или визе — обязательно уточните в указанной организации или в 1345.',
+  '오늘 남은 횟수':'Осталось на сегодня', '이 서류에 대해 질문하기':'Задать вопрос об этом документе',
+  '받은 서류':'Получил(а) документ', '궁금한 점':'Мой вопрос',
   '한국 생활에 바로 쓰는 말':'Слова для жизни в Корее', '러시아어권 가족과 나누는 말':'Слова для общения с русскоязычной семьёй',
   '오늘 볼 카드':'Карточек на сегодня', '뒤집기':'Показать ответ',
   '다시':'Снова', '어려움':'Трудно', '알았음':'Знаю', '쉬움':'Легко',
@@ -762,15 +828,18 @@ function renderHome(){
   const box = $('s-home');
   box.innerHTML =
     '<div class="hello"><h2>' + esc(ME && ME.ready ? t('안녕하세요') + ', ' + ME.name : t('한국 생활 길잡이')) + '</h2><p>' + esc(t('비자·일·집·병원 — 궁금한 것을 찾아보세요')) + '</p></div>' +
+    '<div class="hero"><button id="hDoc"><div class="ic">📄</div><b>' + esc(t('서류 사진 풀이')) + '</b><span>' + esc(t(langNow() === 'ko' ? '러시아어·한국어 서류를 쉬운 말로' : '고지서·안내문·계약서를 러시아어로')) + '</span></button>' +
+    '<button id="hTalk"><div class="ic">🗣️</div><b>' + esc(t(talkLang() === 'ko' ? '한국어로 말하기' : '러시아어로 말하기')) + '</b><span>' + esc(t('보여 주고 들려주는 문장')) + '</span></button></div>' +
     '<div class="search">' + SEARCH_IC + '<input id="hSearch" placeholder="' + esc(t('문서와 질문 검색')) + '"></div>' +
     '<div class="card"><h2>' + esc(t('오늘의 소식')) + '<button class="more" id="hNewsAll">' + esc(t('전체 보기')) + '</button></h2><div id="hNews"></div></div>' +
     '<div class="card"><h2>' + esc(t('많이 본 문서')) + '</h2><div id="hGuides"></div></div>' +
     '<div class="card"><h2>' + esc(t('답을 기다리는 질문')) + '<button class="more" id="hQaAll">' + esc(t('전체 보기')) + '</button></h2><div id="hQa"></div></div>' +
-    '<button class="row" id="hCards"><b>' + esc(t('단어 카드')) + '</b><small>' + esc(t('한국 생활에 바로 쓰는 말')) + '</small></button>';
+    '';
   $('hSearch').onkeydown = e => { if(e.key === 'Enter' && e.target.value.trim()) openSearch(e.target.value.trim()); };
   $('hNewsAll').onclick = openNewsList;
   $('hQaAll').onclick = () => { qaFilter = 'open'; openTab('qa'); };
-  $('hCards').onclick = openCardsHome;
+  $('hDoc').onclick = openExplain;
+  $('hTalk').onclick = openTalk;
   withLoad('hNews', () => loadNews(), list => {
     const el = $('hNews');
     el.innerHTML = list.length ? list.slice(0, 3).map(n => '<button class="link" data-id="' + esc(n.id) + '">' + esc(pickL(n.title)) +
@@ -918,13 +987,14 @@ async function uploadPhoto(blob){
 // 질문 쓰기 / 고치기 (post 가 있으면 고치기)
 function openWrite(post, cat){
   if(!needLogin(() => openWrite(post, cat))) return;
-  const st = { cat: (post && post.cat) || cat || '', photos: (post && post.photos ? post.photos.slice() : []), files: [] };
+  const pre = post && post.prefill ? post : null; if(pre) post = null;
+  const st = { cat: (post && post.cat) || (pre && pre.cat) || cat || '', photos: (post && post.photos ? post.photos.slice() : []), files: [] };
   push(post ? t('수정') : t('질문 쓰기'), () => {
     const box = page();
     box.innerHTML =
       '<label class="f">' + esc(t('분류')) + '</label><button class="opt" id="wCat">' + esc(st.cat ? catName(st.cat) : t('분류를 골라 주세요')) + '</button>' +
-      '<label class="f">' + esc(t('제목')) + '</label><input id="wTitle" maxlength="120" value="' + esc(post ? post.title : '') + '">' +
-      '<label class="f">' + esc(t('내용')) + '</label><textarea id="wBody" maxlength="5000">' + esc(post ? post.body : '') + '</textarea>' +
+      '<label class="f">' + esc(t('제목')) + '</label><input id="wTitle" maxlength="120" value="' + esc(post ? post.title : pre ? pre.title : '') + '">' +
+      '<label class="f">' + esc(t('내용')) + '</label><textarea id="wBody" maxlength="5000">' + esc(post ? post.body : pre ? pre.body : '') + '</textarea>' +
       '<p class="muted small" style="margin-top:6px">' + esc(t('개인정보(외국인등록번호·여권번호·전화번호)는 적지 마세요.')) + '</p>' +
       '<label class="f">' + esc(t('사진')) + '</label><div class="photos" id="wPh"></div>' +
       '<button class="btn gray wide" id="wAdd">' + esc(t('사진 넣기')) + '</button><input type="file" id="wFile" accept="image/*" multiple hidden>' +
@@ -1285,106 +1355,307 @@ function openNews(id){
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// ★ 단어 카드 — 간단한 간격 반복 (폰에만 저장)
+// ★ 말하기 — 상황별로 바로 보여 주고 들려주는 문장 (외우는 카드가 아니라 쓰는 문장)
+//   러시아어 사용자 → 한국어 문장 / 한국어 사용자(남편) → 러시아어 문장
+//   [보여 줄 말, 읽는 법, 뜻]
 // ══════════════════════════════════════════════════════════════════════
-const DECKS = {
-  ko: { name:'한국어 단어', hint:'한국 생활에 바로 쓰는 말', cards: [
-    ['안녕하세요','annyeonghaseyo','Здравствуйте'],['감사합니다','gamsahamnida','Спасибо'],['죄송합니다','joesonghamnida','Извините'],
-    ['괜찮아요','gwaenchanayo','Всё в порядке'],['네','ne','Да'],['아니요','aniyo','Нет'],['얼마예요?','eolmayeyo?','Сколько стоит?'],
-    ['화장실 어디예요?','hwajangsil eodiyeyo?','Где туалет?'],['도와주세요','dowajuseyo','Помогите, пожалуйста'],
-    ['천천히 말해 주세요','cheoncheonhi malhae juseyo','Говорите медленнее, пожалуйста'],
-    ['러시아어 할 수 있어요?','reosiaeo hal su isseoyo?','Вы говорите по-русски?'],
-    ['외국인등록증','oegugin deungnokjeung','ID-карта иностранца'],['출입국','churipguk','Миграционная служба'],
-    ['체류 연장','cheryu yeonjang','Продление пребывания'],['여권','yeokkwon','Паспорт'],['주소','juso','Адрес'],
-    ['전화번호','jeonhwa beonho','Номер телефона'],['병원','byeongwon','Больница'],['약국','yakguk','Аптека'],
-    ['아파요','apayo','Мне больно / я болею'],['머리가 아파요','meoriga apayo','Болит голова'],['배가 아파요','baega apayo','Болит живот'],
-    ['열이 나요','yeori nayo','У меня температура'],['건강보험','geongang boheom','Медицинская страховка'],
-    ['응급실','eungeupsil','Отделение неотложной помощи'],['처방전','cheobangjeon','Рецепт'],['월급','wolgeup','Зарплата (за месяц)'],
-    ['사장님','sajangnim','Начальник, хозяин (обращение)'],['회사','hoesa','Компания'],['근로계약서','geullo gyeyakseo','Трудовой договор'],
-    ['퇴직금','toejikgeum','Выходное пособие'],['산재','sanjae','Производственная травма'],['은행','eunhaeng','Банк'],
-    ['통장','tongjang','Банковская книжка (счёт)'],['송금','songgeum','Денежный перевод'],['월세','wolse','Помесячная аренда'],
-    ['보증금','bojeunggeum','Залог (депозит)'],['집주인','jipjuin','Хозяин жилья'],['계약서','gyeyakseo','Договор'],
-    ['전입신고','jeonip singo','Регистрация по месту жительства'],['지하철','jihacheol','Метро'],['버스 정류장','beoseu jeongnyujang','Автобусная остановка'],
-    ['교통카드','gyotong kadeu','Транспортная карта'],['운전면허','unjeon myeonheo','Водительские права'],['남편','nampyeon','Муж'],
-    ['아내','anae','Жена'],['어린이집','eorinijip','Ясли, детский сад'],['학교','hakgyo','Школа'],['선생님','seonsaengnim','Учитель'],
-    ['계산해 주세요','gyesanhae juseyo','Посчитайте, пожалуйста'],['포장해 주세요','pojanghae juseyo','С собой, пожалуйста'],
-    ['맵지 않게 해 주세요','maepji anke hae juseyo','Не острое, пожалуйста'],['경찰','gyeongchal','Полиция'],['불이야!','buriya!','Пожар!']
-  ] },
-  ru: { name:'러시아어 단어', hint:'러시아어권 가족과 나누는 말', cards: [
-    ['Привет','프리볘트','안녕 (친한 사이)'],['Здравствуйте','즈드라스트부이쩨','안녕하세요'],['Спасибо','스파시바','고마워요'],
-    ['Пожалуйста','빠잘루스타','부탁해요 / 천만에요'],['Извини','이즈비니','미안해'],['Я тебя люблю','야 찌뱌 류블류','사랑해'],
-    ['Доброе утро','도브라예 우트라','좋은 아침'],['Спокойной ночи','스파꼬이너이 노치','잘 자'],['Как дела?','깍 질라?','잘 지내?'],
-    ['Всё хорошо','프쇼 하라쇼','다 괜찮아'],['Вкусно!','프꾸스나!','맛있어!'],['Давай поедим','다바이 빠예짐','같이 먹자'],
-    ['Где ты?','그졔 띄?','어디야?'],['Я скоро буду','야 스꼬라 부두','곧 갈게'],['Подожди','빠다주지','기다려'],
-    ['Да','다','네'],['Нет','녜트','아니요'],['Хорошо','하라쇼','좋아'],['Не знаю','니 즈나유','몰라요'],
-    ['Я не понимаю','야 니 빠니마유','이해 못 해요'],['Повтори, пожалуйста','빠프따리 빠잘루스타','다시 말해 줘'],
-    ['Мама','마마','엄마'],['Папа','빠빠','아빠'],['Тёща','쬬샤','장모님'],['Тесть','쩨스찌','장인어른'],
-    ['Дочь','도치','딸'],['Сын','씐','아들'],['Семья','씨미야','가족'],['Дом','돔','집'],['Деньги','졘기','돈'],
-    ['Магазин','마가진','가게'],['Больница','발니짜','병원'],['Врач','브라치','의사'],['Мне плохо','므녜 플로하','몸이 안 좋아'],
-    ['Позвони мне','빠즈바니 므녜','전화해 줘'],['Красивая','끄라시바야','예쁘다 (여성에게)'],['Молодец!','말라졔쯔!','잘했어!'],
-    ['С днём рождения!','스 드뇸 라즈제니야!','생일 축하해!'],['С Новым годом!','스 노븜 고담!','새해 복 많이 받아!'],
-    ['Приятного аппетита','쁘리야뜨나바 아삐찌따','맛있게 드세요'],['Не волнуйся','니 발누이샤','걱정하지 마'],
-    ['Сколько стоит?','스꼴까 스또이트?','얼마예요?'],['Чай','차이','차'],['Хлеб','흘례프','빵'],['Вода','바다','물'],
-    ['Холодно','홀라드나','추워'],['Жарко','자르까','더워']
-  ] }
+const TALK = {
+  ko: [
+    { id:'hosp', ic:'🏥', name:'병원', items:[
+      ['여기가 아파요.','yeogiga apayo','Вот здесь болит.'],
+      ['어제부터 아파요.','eojebuteo apayo','Болит со вчерашнего дня.'],
+      ['열이 나고 기침을 해요.','yeori nago gichimeul haeyo','У меня температура и кашель.'],
+      ['머리가 아프고 어지러워요.','meoriga apeugo eojireowoyo','Болит голова, кружится голова.'],
+      ['약 알레르기가 있어요.','yak allereugiga isseoyo','У меня аллергия на лекарства.'],
+      ['임신 중이에요.','imsin jungieyo','Я беременна.'],
+      ['이 약을 먹고 있어요.','i yageul meokgo isseoyo','Я принимаю это лекарство.'],
+      ['아이가 열이 나요.','aiga yeori nayo','У ребёнка температура.'],
+      ['진단서를 받을 수 있어요?','jindanseoreul badeul su isseoyo?','Можно получить медицинскую справку?'],
+      ['러시아어 통역이 필요해요.','reosiaeo tongyeogi piryohaeyo','Мне нужен переводчик с русского.'] ] },
+    { id:'pharm', ic:'💊', name:'약국', items:[
+      ['감기약 주세요.','gamgiyak juseyo','Дайте лекарство от простуды.'],
+      ['진통제 있어요?','jintongje isseoyo?','Есть обезболивающее?'],
+      ['소화제 주세요.','sohwaje juseyo','Дайте средство от несварения.'],
+      ['하루에 몇 번 먹어요?','harue myeot beon meogeoyo?','Сколько раз в день принимать?'],
+      ['밥 먹고 먹어요?','bap meokgo meogeoyo?','Принимать после еды?'],
+      ['아이가 먹어도 돼요?','aiga meogeodo dwaeyo?','Можно давать ребёнку?'] ] },
+    { id:'office', ic:'🪪', name:'출입국·주민센터', items:[
+      ['외국인등록을 하러 왔어요.','oegugin deungnogeul hareo wasseoyo','Я пришёл(ла) на регистрацию иностранца.'],
+      ['체류기간을 연장하고 싶어요.','cheryugiganeul yeonjanghago sipeoyo','Хочу продлить срок пребывания.'],
+      ['이사해서 주소를 바꾸러 왔어요.','isahaeseo jusoreul bakkureo wasseoyo','Я переехал(а), пришёл(ла) сменить адрес.'],
+      ['예약했어요.','yeyakaesseoyo','Я записан(а) на приём.'],
+      ['어떤 서류가 필요해요?','eotteon seoryuga piryohaeyo?','Какие документы нужны?'],
+      ['여기에 써 주세요.','yeogie sseo juseyo','Напишите здесь, пожалуйста.'],
+      ['언제 받을 수 있어요?','eonje badeul su isseoyo?','Когда можно получить?'],
+      ['다시 한 번 천천히 말해 주세요.','dasi han beon cheoncheonhi malhae juseyo','Повторите, пожалуйста, медленно.'] ] },
+    { id:'bank', ic:'🏦', name:'은행', items:[
+      ['통장을 만들고 싶어요.','tongjangeul mandeulgo sipeoyo','Хочу открыть счёт.'],
+      ['체크카드도 만들어 주세요.','chekeukadeudo mandeureo juseyo','Сделайте, пожалуйста, и дебетовую карту.'],
+      ['해외로 송금하고 싶어요.','haeoero songgeumhago sipeoyo','Хочу сделать перевод за границу.'],
+      ['이체 한도를 풀고 싶어요.','iche handoreul pulgo sipeoyo','Хочу снять лимит на переводы.'],
+      ['비밀번호를 잊어버렸어요.','bimilbeonhoreul ijeobeoryeosseoyo','Я забыл(а) пароль.'],
+      ['카드를 잃어버렸어요.','kadeureul ireobeoryeosseoyo','Я потерял(а) карту.'] ] },
+    { id:'work', ic:'💼', name:'일터', items:[
+      ['월급이 아직 안 들어왔어요.','wolgeubi ajik an deureowasseoyo','Зарплата ещё не пришла.'],
+      ['근로계약서를 주세요.','geullo gyeyakseoreul juseyo','Дайте мне мой трудовой договор.'],
+      ['월급 명세서를 받을 수 있어요?','wolgeup myeongseseoreul badeul su isseoyo?','Можно получить расчётный листок?'],
+      ['오늘 몸이 아파서 쉬어야 해요.','oneul momi apaseo swieoya haeyo','Я сегодня болею, мне нужно отдохнуть.'],
+      ['다쳤어요. 병원에 가야 해요.','dachyeosseoyo. byeongwone gaya haeyo','Я получил(а) травму, мне нужно в больницу.'],
+      ['몇 시까지 일해요?','myeot sikkaji ilhaeyo?','До скольки работаем?'],
+      ['이해가 안 돼요. 다시 설명해 주세요.','ihaega an dwaeyo. dasi seolmyeonghae juseyo','Не понимаю. Объясните ещё раз.'] ] },
+    { id:'home', ic:'🏠', name:'집·집주인', items:[
+      ['물이 새요.','muri saeyo','Протекает вода.'],
+      ['보일러가 고장 났어요.','boilleoga gojang nasseoyo','Сломался котёл (отопление).'],
+      ['뜨거운 물이 안 나와요.','tteugeoun muri an nawayo','Нет горячей воды.'],
+      ['언제 고쳐 주실 수 있어요?','eonje gochyeo jusil su isseoyo?','Когда сможете починить?'],
+      ['관리비는 얼마예요?','gwallibineun eolmayeyo?','Сколько платить за обслуживание дома?'],
+      ['다음 달에 이사 나가요.','daeum dare isa nagayo','В следующем месяце я съезжаю.'],
+      ['보증금은 언제 돌려주세요?','bojeunggeumeun eonje dollyeojuseyo?','Когда вы вернёте залог?'] ] },
+    { id:'move', ic:'🚕', name:'택시·길', items:[
+      ['이 주소로 가 주세요.','i jusoro ga juseyo','Отвезите, пожалуйста, по этому адресу.'],
+      ['여기서 세워 주세요.','yeogiseo sewo juseyo','Остановите здесь.'],
+      ['카드로 계산할게요.','kadeuro gyesanhalgeyo','Я оплачу картой.'],
+      ['지하철역이 어디예요?','jihacheollyeogi eodiyeyo?','Где станция метро?'],
+      ['길을 잃었어요.','gireul ireosseoyo','Я заблудился(лась).'] ] },
+    { id:'shop', ic:'🛒', name:'가게·식당', items:[
+      ['이거 얼마예요?','igeo eolmayeyo?','Сколько это стоит?'],
+      ['봉투 주세요.','bongtu juseyo','Дайте пакет.'],
+      ['영수증 주세요.','yeongsujeung juseyo','Дайте чек.'],
+      ['환불하고 싶어요.','hwanbulhago sipeoyo','Хочу вернуть покупку.'],
+      ['돼지고기 들어가요?','dwaejigogi deureogayo?','Здесь есть свинина?'],
+      ['맵지 않게 해 주세요.','maepji anke hae juseyo','Сделайте не острым, пожалуйста.'],
+      ['포장해 주세요.','pojanghae juseyo','С собой, пожалуйста.'] ] },
+    { id:'school', ic:'🎒', name:'어린이집·학교', items:[
+      ['아이가 오늘 아파서 못 가요.','aiga oneul apaseo mot gayo','Ребёнок сегодня болеет и не придёт.'],
+      ['몇 시에 데리러 와야 해요?','myeot sie derireo waya haeyo?','Во сколько нужно забрать?'],
+      ['준비물이 뭐예요?','junbimuri mwoyeyo?','Что нужно принести?'],
+      ['우리 아이는 한국어를 잘 못해요.','uri aineun hangugeoreul jal motaeyo','Мой ребёнок плохо говорит по-корейски.'],
+      ['선생님과 상담하고 싶어요.','seonsaengnimgwa sangdamhago sipeoyo','Хочу поговорить с учителем.'] ] },
+    { id:'sos', ic:'🚨', name:'긴급', items:[
+      ['도와주세요!','dowajuseyo!','Помогите!'],
+      ['경찰을 불러 주세요.','gyeongchareul bulleo juseyo','Вызовите полицию.'],
+      ['구급차를 불러 주세요.','gugeupchareul bulleo juseyo','Вызовите скорую.'],
+      ['사람이 쓰러졌어요.','sarami sseureojyeosseoyo','Человек потерял сознание.'],
+      ['불이 났어요!','buri nasseoyo!','Пожар!'],
+      ['지갑을 도둑맞았어요.','jigabeul dodungmajasseoyo','У меня украли кошелёк.'] ] }
+  ],
+  ru: [
+    { id:'wife', ic:'💑', name:'아내에게', items:[
+      ['Я тебя люблю.','야 찌뱌 류블류','사랑해.'],
+      ['Ты сегодня очень красивая.','띄 시보드냐 오친 끄라시바야','오늘 정말 예뻐.'],
+      ['Как ты себя чувствуешь?','깍 띄 시뱌 추스트부예쉬?','몸은 좀 어때?'],
+      ['Не волнуйся, всё будет хорошо.','니 발누이샤, 프쇼 부짓 하라쇼','걱정 마, 다 잘될 거야.'],
+      ['Прости меня.','쁘라스찌 미냐','미안해. (용서해 줘)'],
+      ['Спасибо за ужин.','스파시바 자 우진','저녁 고마워.'],
+      ['Что ты хочешь на ужин?','쉬또 띄 호치쉬 나 우진?','저녁 뭐 먹고 싶어?'],
+      ['Я скоро буду дома.','야 스꼬라 부두 도마','곧 집에 갈게.'],
+      ['Давай погуляем.','다바이 빠굴랴옘','산책하자.'] ] },
+    { id:'inlaws', ic:'👵', name:'장인·장모님께', items:[
+      ['Здравствуйте! Рад вас видеть.','즈드라스트부이쩨! 라트 바스 비졔찌','안녕하세요! 뵙게 되어 기뻐요.'],
+      ['Как ваше здоровье?','깍 바셰 즈다로비예?','건강은 어떠세요?'],
+      ['Очень вкусно, спасибо!','오친 프꾸스나, 스파시바!','정말 맛있어요, 고맙습니다!'],
+      ['Я очень люблю вашу дочь.','야 오친 류블류 바슈 도치','따님을 정말 사랑합니다.'],
+      ['Приезжайте к нам в Корею.','쁘리이자이쩨 크 남 프 까례유','한국 저희 집에 오세요.'],
+      ['До свидания! Берегите себя.','다스비다니야! 비리기쩨 시뱌','안녕히 계세요! 건강 조심하세요.'] ] },
+    { id:'daily', ic:'🏠', name:'집에서', items:[
+      ['Где ключи?','그졔 끌류치?','열쇠 어디 있어?'],
+      ['Я на работе.','야 나 라보쩨','나 일하는 중이야.'],
+      ['Позвони, когда будешь свободна.','빠즈바니, 까그다 부지쉬 스바보드나','시간 될 때 전화해.'],
+      ['Купить что-нибудь в магазине?','꾸삐찌 쉬또니부찌 브 마가지녜?','가게에서 뭐 사 갈까?'],
+      ['Я забыл.','야 자븰','깜빡했어.'],
+      ['Подожди минутку.','빠다쥐 미누뜨꾸','잠깐만 기다려.'] ] },
+    { id:'kids', ic:'👶', name:'아이에게', items:[
+      ['Иди сюда.','이지 슈다','이리 와.'],
+      ['Пора спать.','빠라 스빠찌','잘 시간이야.'],
+      ['Мой руки.','모이 루끼','손 씻어.'],
+      ['Кушать!','꾸샤찌!','밥 먹자!'],
+      ['Молодец!','말라졔쯔!','잘했어!'] ] },
+    { id:'holiday', ic:'🎉', name:'축하할 때', items:[
+      ['С днём рождения!','스 드뇸 라즈졔니야!','생일 축하해!'],
+      ['С Новым годом!','스 노븸 고담!','새해 복 많이 받아!'],
+      ['С 8 Марта!','스 바시믐 마르따!','3월 8일 여성의 날 축하해! (러시아어권에서 아주 중요한 날)'],
+      ['Поздравляю!','빠즈드라블랴유!','축하해!'] ] }
+  ]
 };
-function cardState(){ try{ return JSON.parse(localStorage.getItem('sv_cards') || '{}'); }catch(_){ return {}; } }
-function saveCardState(s){ try{ localStorage.setItem('sv_cards', JSON.stringify(s)); }catch(_){} }
-const DAY = 86400000;
-function dueCards(deck){
-  const s = cardState()[deck] || {};
-  const n = Date.now();
-  const due = [], fresh = [];
-  DECKS[deck].cards.forEach((c, i) => { const r = s[i]; if(!r) fresh.push(i); else if(r.due <= n) due.push(i); });
-  return due.concat(fresh.slice(0, 10));   // 새 카드는 하루 10장
+function talkLang(){ return langNow() === 'ko' ? 'ru' : 'ko'; }
+function savedTalk(){ try{ return JSON.parse(localStorage.getItem('sv_talk') || '[]'); }catch(_){ return []; } }
+function setSavedTalk(a){ try{ localStorage.setItem('sv_talk', JSON.stringify(a.slice(0, 100))); }catch(_){} }
+function speak(text, lang){
+  try{
+    if(!('speechSynthesis' in window)) return false;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'ko' ? 'ko-KR' : 'ru-RU';
+    u.rate = 0.85;
+    const v = speechSynthesis.getVoices().find(x => (x.lang || '').toLowerCase().startsWith(lang));
+    if(v) u.voice = v;
+    speechSynthesis.speak(u);
+    return true;
+  }catch(_){ return false; }
 }
-function openCardsHome(){
-  push(t('단어 카드'), () => {
-    const order = langNow() === 'ko' ? ['ru', 'ko'] : ['ko', 'ru'];
-    const all = cardState();
-    page().innerHTML = order.map(k => {
-      const learned = Object.keys(all[k] || {}).length;
-      return '<button class="row" data-deck="' + k + '"><b>' + esc(t(DECKS[k].name)) + '</b><small>' + esc(t(DECKS[k].hint)) + '<br>' +
-        esc(t('오늘 볼 카드')) + ': ' + dueCards(k).length + ' · ' + esc(t('배운 카드')) + ': ' + learned + '/' + DECKS[k].cards.length + '</small></button>';
-    }).join('');
-    page().querySelectorAll('[data-deck]').forEach(b => b.onclick = () => playDeck(b.dataset.deck));
-  });
+const SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>';
+function phraseRow(p, i){
+  return '<button class="phrase" data-i="' + i + '"><b>' + esc(p[0]) + '</b><small>' + esc(p[1]) + '</small><span>' + esc(p[2]) + '</span></button>';
 }
-function playDeck(deck){
-  let queue = dueCards(deck), flipped = false;
-  push(t(DECKS[deck].name), function draw(){
+function openTalk(){
+  const L = talkLang();
+  push(t(L === 'ko' ? '한국어로 말하기' : '러시아어로 말하기'), () => {
     const box = page();
-    if(!queue.length){
-      box.innerHTML = '<div class="card empty"><p><b>' + esc(t('오늘 할 카드를 다 봤습니다')) + '</b></p></div>' +
-        '<button class="btn gray wide" id="cdReset">' + esc(t('처음부터 다시')) + '</button>';
-      $('cdReset').onclick = async () => {
-        if(!(await ask(t('처음부터 다시') + '?', t('확인')))) return;
-        const s = cardState(); delete s[deck]; saveCardState(s); queue = dueCards(deck); draw();
-      };
-      return;
-    }
-    const c = DECKS[deck].cards[queue[0]];
-    box.innerHTML = '<div class="card fc"><div class="w">' + esc(c[0]) + '</div><div class="r">' + esc(c[1]) + '</div>' +
-      (flipped ? '<div class="m">' + esc(c[2]) + '</div>' : '') + '</div>' +
-      (flipped ? '<div class="grades">' + [['0','다시'],['1','어려움'],['2','알았음'],['3','쉬움']].map(g =>
-        '<button class="btn' + (g[0] === '0' ? ' gray' : '') + '" data-g="' + g[0] + '">' + esc(t(g[1])) + '</button>').join('') + '</div>'
-        : '<button class="btn wide" id="cdFlip">' + esc(t('뒤집기')) + '</button>') +
-      '<p class="muted small" style="text-align:center;margin-top:10px">' + queue.length + '</p>';
-    if(!flipped) $('cdFlip').onclick = () => { flipped = true; draw(); };
-    box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
-      const g = +b.dataset.g, i = queue.shift(), s = cardState();
-      s[deck] = s[deck] || {};
-      const r = s[deck][i] || { ivl: 0, ease: 2.5 };
-      if(g === 0){ r.ivl = 0; r.ease = Math.max(1.3, r.ease - 0.2); queue.push(i); }
-      else {
-        r.ivl = r.ivl ? r.ivl * (g === 1 ? 1.2 : g === 2 ? r.ease : r.ease * 1.3) : (g === 1 ? 1 : g === 2 ? 2 : 4);
-        r.ease = Math.max(1.3, r.ease + (g === 1 ? -0.15 : g === 3 ? 0.15 : 0));
-      }
-      r.due = Date.now() + Math.round(r.ivl * DAY);
-      s[deck][i] = r; saveCardState(s);
-      flipped = false; draw();
-    });
+    const sv = savedTalk().filter(p => p[3] === L);
+    box.innerHTML =
+      '<div class="card"><h2>' + esc(t(L === 'ko' ? '하고 싶은 말을 쓰면 한국어로 바꿔 보여 줍니다' : '하고 싶은 말을 쓰면 러시아어로 바꿔 보여 줍니다')) + '</h2>' +
+      '<textarea id="tkIn" style="min-height:84px" placeholder="' + esc(t(L === 'ko' ? '예: 내일 오전에 와도 될까요?' : '예: 오늘 저녁 같이 먹자')) + '"></textarea>' +
+      '<button class="btn wide" id="tkGo">' + esc(t('바꾸기')) + '</button></div>' +
+      (sv.length ? '<h3 class="sec">' + esc(t('저장한 문장')) + '</h3><div class="card plist" id="tkSaved">' + sv.map((p, i) => phraseRow(p, i)).join('') + '</div>' : '') +
+      '<h3 class="sec">' + esc(t('상황별 문장')) + '</h3>' +
+      '<div class="cats">' + TALK[L].map(s => '<button class="cat" data-s="' + s.id + '"><div class="ic">' + s.ic + '</div><b>' + esc(t(s.name)) + '</b><span>' + s.items.length + ' ' + esc(t('문장')) + '</span></button>').join('') + '</div>';
+    $('tkGo').onclick = async () => {
+      const v = $('tkIn').value.trim(); if(!v) return;
+      if(!needLogin()) return;
+      const btn = $('tkGo'); btn.disabled = true;
+      try{
+        await fb();
+        const r = await FB.Fn.httpsCallable(FB.fn, 'tr')({ text: v.slice(0, 500), to: L });
+        const out = (r.data && r.data.text) || '';
+        if(out) showPhrase([out, '', v, L]);
+      }catch(_){ tell(t('번역하지 못했습니다')); }
+      btn.disabled = false;
+    };
+    box.querySelectorAll('[data-s]').forEach(b => b.onclick = () => openTalkSit(b.dataset.s));
+    if($('tkSaved')) $('tkSaved').querySelectorAll('[data-i]').forEach(b => b.onclick = () => showPhrase(sv[+b.dataset.i]));
   });
+}
+function openTalkSit(id){
+  const L = talkLang();
+  const s = TALK[L].find(x => x.id === id);
+  push(t(s.name), () => {
+    page().innerHTML = '<div class="card plist">' + s.items.map((p, i) => phraseRow(p, i)).join('') + '</div>';
+    page().querySelectorAll('[data-i]').forEach(b => b.onclick = () => showPhrase(s.items[+b.dataset.i].concat([L])));
+  });
+}
+// 상대에게 보여 주는 큰 화면 + 소리
+function showPhrase(p){
+  const L = p[3] || talkLang();
+  push(t('보여 주기'), () => {
+    const isSaved = savedTalk().some(x => x[0] === p[0]);
+    page().innerHTML = '<div class="show"><div class="big" lang="' + L + '">' + esc(p[0]) + '</div>' +
+      (p[1] ? '<div class="pron">' + esc(p[1]) + '</div>' : '') + '<div class="mean">' + esc(p[2]) + '</div></div>' +
+      '<div class="two"><button class="btn" id="shSpk">' + SPK + '&nbsp; ' + esc(t('소리 내 읽기')) + '</button>' +
+      '<button class="btn gray" id="shSave">' + esc(isSaved ? t('저장됨') : t('저장')) + '</button></div>';
+    $('shSpk').onclick = () => { if(!speak(p[0], L)) tell(t('이 폰은 소리 읽기를 지원하지 않습니다')); };
+    $('shSave').onclick = () => {
+      let a = savedTalk();
+      if(a.some(x => x[0] === p[0])) a = a.filter(x => x[0] !== p[0]); else a.unshift([p[0], p[1], p[2], L]);
+      setSavedTalk(a); back2();
+    };
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ★ 서류 사진 풀이 — 사진은 서버에서 읽고 바로 버린다. 결과 글만 이 폰에 남긴다.
+// ══════════════════════════════════════════════════════════════════════
+function docHistory(){ try{ return JSON.parse(localStorage.getItem('sv_docs') || '[]'); }catch(_){ return []; } }
+function setDocHistory(a){ try{ localStorage.setItem('sv_docs', JSON.stringify(a.slice(0, 30))); }catch(_){} }
+function shrinkB64(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const d = c.toDataURL('image/jpeg', 0.82);
+      res({ b64: d.split(',')[1], url: d });
+    };
+    img.onerror = e => { URL.revokeObjectURL(url); rej(e); };
+    img.src = url;
+  });
+}
+function openExplain(){
+  const st = { pages: [], busy: false };
+  push(t('서류 사진 풀이'), () => {
+    const box = page();
+    const hist = docHistory();
+    box.innerHTML =
+      '<div class="card"><h2>' + esc(t('한국어 서류, 사진 한 장이면 됩니다')) + '</h2>' +
+      '<p class="muted">' + esc(t('고지서, 출입국 안내문, 계약서, 병원 영수증, 학교 알림, 문자 캡처 — 무엇인지, 무엇을 언제까지 해야 하는지 풀어 드립니다.')) + '</p>' +
+      '<div class="pages" id="exPages"></div>' +
+      '<div class="two"><button class="btn" id="exCam">' + esc(t('사진 찍기')) + '</button><button class="btn gray" id="exGal">' + esc(t('앨범에서')) + '</button></div>' +
+      '<input type="file" id="exCamIn" accept="image/*" capture="environment" hidden><input type="file" id="exGalIn" accept="image/*" multiple hidden>' +
+      '<button class="btn wide" id="exGo" style="display:none">' + esc(t('풀어 보기')) + '</button>' +
+      '<p class="muted small" style="margin-top:12px">🔒 ' + esc(t('사진은 저장하지 않고 읽은 뒤 바로 지웁니다. 외국인등록번호·여권번호가 보이면 가리고 찍으세요.')) + '</p></div>' +
+      '<div id="exOut"></div>' +
+      (hist.length ? '<h3 class="sec">' + esc(t('지난 풀이')) + '</h3>' + hist.map((h, i) =>
+        '<button class="row" data-h="' + i + '"><b>' + esc(h.r.docType || t('서류')) + '</b><small>' + esc(new Date(h.at).toLocaleDateString()) + (h.r.deadline ? ' · ' + esc(h.r.deadline) : '') + '</small></button>').join('') : '');
+    const draw = () => {
+      $('exPages').innerHTML = st.pages.map((p, i) => '<div class="pg"><img src="' + p.url + '"><button data-x="' + i + '" aria-label="x">×</button></div>').join('');
+      $('exPages').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { st.pages.splice(+b.dataset.x, 1); draw(); });
+      $('exGo').style.display = st.pages.length ? '' : 'none';
+      $('exCam').textContent = st.pages.length ? t('다음 장 찍기') : t('사진 찍기');
+    };
+    const add = async files => {
+      for(const f of files){
+        if(st.pages.length >= 3){ tell(t('한 번에 3장까지')); break; }
+        try{ st.pages.push(await shrinkB64(f)); }catch(_){}
+      }
+      draw();
+    };
+    $('exCam').onclick = () => $('exCamIn').click();
+    $('exGal').onclick = () => $('exGalIn').click();
+    $('exCamIn').onchange = e => { add([...e.target.files]); e.target.value = ''; };
+    $('exGalIn').onchange = e => { add([...e.target.files]); e.target.value = ''; };
+    $('exGo').onclick = async () => {
+      if(st.busy) return;
+      if(!needLogin()) return;
+      st.busy = true; $('exGo').disabled = true; $('exGo').textContent = t('읽는 중… 10~30초');
+      try{
+        await fb();
+        const r = await FB.Fn.httpsCallable(FB.fn, 'explain', { timeout: 120000 })({ images: st.pages.map(p => p.b64), to: langNow() });
+        const res = r.data.result;
+        const h = docHistory(); h.unshift({ at: Date.now(), r: res }); setDocHistory(h);
+        st.pages = []; draw();
+        $('exOut').innerHTML = docResult(res, r.data.left);
+        bindDocResult($('exOut'), res);
+        $('exOut').scrollIntoView({ behavior: 'smooth' });
+      }catch(e){
+        const c = (e && e.code) || '';
+        tell(/resource-exhausted/.test(c) ? t('오늘 쓸 수 있는 횟수를 다 썼습니다. 내일 다시 쓸 수 있습니다.') : t('읽지 못했습니다. 더 밝고 반듯하게 찍어 보세요.'), 5000);
+      }
+      st.busy = false; if($('exGo')){ $('exGo').disabled = false; $('exGo').textContent = t('풀어 보기'); }
+    };
+    box.querySelectorAll('[data-h]').forEach(b => b.onclick = () => openDocResult(hist[+b.dataset.h].r));
+    draw();
+  });
+}
+function docResult(r, left){
+  if(!r || r.isDocument === false){
+    return '<div class="card"><h2>' + esc(t('서류를 읽지 못했습니다')) + '</h2><p>' + esc((r && r.summary) || '') + '</p></div>';
+  }
+  const U = { high: ['warn', '급함'], medium: ['', '중요'], low: ['ok', '참고용'] }[r.urgency] || ['', '중요'];
+  const list = a => '<ul>' + a.map(x => '<li>' + linkify(x) + '</li>').join('') + '</ul>';
+  const field = (label, v) => v ? '<div class="kv"><span>' + esc(t(label)) + '</span><b>' + linkify(v) + '</b></div>' : '';
+  return '<div class="card doc">' +
+    '<span class="badge ' + U[0] + '">' + esc(t(U[1])) + '</span>' +
+    '<h2 style="margin-top:8px">' + esc(r.docType || '') + '</h2>' + (r.from ? '<p class="muted">' + esc(r.from) + '</p>' : '') +
+    '<p class="lead">' + linkify(r.summary || '') + '</p>' +
+    field('기한', r.deadline) + field('금액', r.amount) + field('문의처', r.contact) +
+    (r.actions && r.actions.length ? '<h3>' + esc(t('해야 할 일')) + '</h3>' + list(r.actions) : '') +
+    (r.warnings && r.warnings.length ? '<div class="warnbox"><b>' + esc(t('주의')) + '</b>' + list(r.warnings) + '</div>' : '') +
+    (r.unsure ? '<p class="muted small">' + esc(t('잘 안 보인 부분')) + ': ' + esc(r.unsure) + '</p>' : '') +
+    (r.fullText ? '<details><summary>' + esc(t('전체 번역 보기')) + '</summary><div class="body">' + plain(r.fullText) + '</div></details>' : '') +
+    '<p class="muted small" style="margin-top:12px">' + esc(t('AI가 읽은 내용이라 틀릴 수 있습니다. 돈·기한·체류가 걸린 일은 적힌 기관이나 1345에 꼭 확인하세요.')) + '</p>' +
+    (left != null && left < 50 ? '<p class="muted small">' + esc(t('오늘 남은 횟수')) + ': ' + left + '</p>' : '') +
+    '<button class="btn line wide" data-ask="1">' + esc(t('이 서류에 대해 질문하기')) + '</button></div>';
+}
+function bindDocResult(el, r){
+  const b = el.querySelector('[data-ask]');
+  if(b) b.onclick = () => openWrite({ prefill: true, cat: 'etc', title: (r.docType || '').slice(0, 100),
+    body: t('받은 서류') + ': ' + (r.docType || '') + '\n' + (r.summary || '') + '\n\n' + t('궁금한 점') + ': ' });
+}
+function openDocResult(r){
+  push(r.docType || t('서류'), () => { page().innerHTML = docResult(r); bindDocResult(page(), r); });
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -1393,8 +1664,8 @@ function playDeck(deck){
 const DOCS = {
   terms: { ko: '## Свои(스바이) 이용약관\n시행일: 2026년 12월\n\n## 1. 서비스\n- Свои는 한국에 사는 러시아어권 사람과 가족을 위한 생활정보·질문답변·업소 안내 서비스입니다.\n- 앱의 정보는 일반 안내입니다. 개인 사안(체류·노동·법률)은 1345, 출입국·외국인청, 행정사·변호사에게 꼭 확인하세요. 운영자는 정보 이용 결과에 대해 법적 책임을 지지 않습니다.\n- Свои는 직업 소개, 비자 대행, 결혼 중개를 하지 않습니다.\n\n## 2. 이용자의 의무\n- 욕설·비하, 스팸·광고, 사기, 불법 정보, 다른 사람의 개인정보를 올리면 안 됩니다.\n- 위반한 글은 예고 없이 가려지고, 반복하면 이용이 제한됩니다.\n- 글의 권리는 쓴 사람에게 있으며, 운영자는 서비스 안에서 보여 주고 번역하는 데 쓸 수 있습니다.\n\n## 3. 업소 등록\n- 업소는 사업자등록을 한 주인만 등록할 수 있고, 운영자 확인 후 공개됩니다.\n- 사실과 다른 정보가 확인되면 공개를 중단합니다.\n\n## 4. 탈퇴\n- 더보기 > 내 계정 > 회원 탈퇴에서 언제든 탈퇴할 수 있습니다.\n\n## 5. 문의\n- ' + CONTACT_EMAIL,
            ru: '## Правила пользования Свои (스바이)\nДействуют с декабря 2026 г.\n\n## 1. Сервис\n- Свои — справочник, вопросы и ответы и каталог мест для русскоязычных жителей Кореи и их семей.\n- Информация в приложении носит общий характер. По личной ситуации (виза, работа, право) обязательно уточняйте в 1345, миграционной службе, у 행정사 или юриста. Администрация не несёт юридической ответственности за последствия использования информации.\n- Свои не занимается трудоустройством, оформлением виз и брачным посредничеством.\n\n## 2. Обязанности пользователя\n- Запрещены оскорбления, спам и реклама, мошенничество, незаконная информация, публикация чужих персональных данных.\n- Нарушающие сообщения скрываются без предупреждения, при повторе доступ ограничивается.\n- Права на текст принадлежат автору; администрация может показывать и переводить его внутри сервиса.\n\n## 3. Каталог мест\n- Добавлять место может только владелец с регистрацией бизнеса (사업자등록); место публикуется после проверки.\n- При обнаружении ложных сведений публикация прекращается.\n\n## 4. Удаление аккаунта\n- В любой момент: Ещё > Мой аккаунт > Удалить аккаунт.\n\n## 5. Контакты\n- ' + CONTACT_EMAIL },
-  privacy: { ko: '## 개인정보처리방침\n시행일: 2026년 12월\n\n## 1. 모으는 정보\n- 로그인: 이메일 주소, 로그인 식별값(구글 또는 이메일)\n- 이용자가 정한 닉네임, 앱 언어, 약관 동의 시각\n- 이용자가 올린 글·답변·사진, 차단 목록, 신고 내용\n- 업소 등록 시: 업소 이름·주소·전화·텔레그램·사업자등록번호\n- 외국인등록번호·여권번호는 모으지 않습니다.\n\n## 2. 쓰는 곳\n- 로그인과 계정 관리, 게시판 운영, 신고 처리와 부정 이용 방지, 업소 확인\n\n## 3. 보관 기간\n- 탈퇴하면 계정 정보를 바로 지웁니다. 올린 글은 남되 작성자 이름은 "탈퇴한 회원"으로 바뀝니다.\n- 신고 기록은 분쟁 대비로 1년 보관 후 지웁니다.\n\n## 4. 맡기는 곳 (처리 위탁·국외 이전)\n- Google LLC (Firebase: 로그인·데이터 저장·번역) — 데이터는 Google Cloud 서울 리전에 저장되며, 번역 등 일부 처리는 국외에서 이뤄질 수 있습니다.\n\n## 5. 이용자의 권리\n- 언제든 내 정보 열람·수정·삭제와 탈퇴를 요청할 수 있습니다.\n\n## 6. 개인정보 보호책임자\n- Свои 운영자, ' + CONTACT_EMAIL,
-             ru: '## Политика конфиденциальности\nДействует с декабря 2026 г.\n\n## 1. Какие данные мы собираем\n- Вход: адрес e-mail, идентификатор входа (Google или e-mail)\n- Выбранное вами имя, язык приложения, время согласия с правилами\n- Ваши вопросы, ответы и фото, список блокировок, жалобы\n- При добавлении места: название, адрес, телефон, Telegram, номер регистрации бизнеса\n- Номера ID-карты иностранца и паспорта мы не собираем.\n\n## 2. Для чего\n- Вход и управление аккаунтом, работа форума, рассмотрение жалоб и защита от злоупотреблений, проверка мест\n\n## 3. Срок хранения\n- После удаления аккаунта данные аккаунта удаляются сразу. Ваши сообщения остаются, но имя автора меняется на «Удалённый пользователь».\n- Жалобы хранятся 1 год на случай споров, затем удаляются.\n\n## 4. Передача обработки\n- Google LLC (Firebase: вход, хранение данных, перевод). Данные хранятся в регионе Google Cloud «Сеул»; часть обработки (например, перевод) может выполняться за пределами Кореи.\n\n## 5. Ваши права\n- Вы можете в любой момент запросить просмотр, исправление, удаление данных или удалить аккаунт.\n\n## 6. Ответственный за защиту данных\n- Администрация Свои, ' + CONTACT_EMAIL }
+  privacy: { ko: '## 개인정보처리방침\n시행일: 2026년 12월\n\n## 1. 모으는 정보\n- 로그인: 이메일 주소, 로그인 식별값(구글 또는 이메일)\n- 이용자가 정한 닉네임, 앱 언어, 약관 동의 시각\n- 이용자가 올린 글·답변·사진, 차단 목록, 신고 내용\n- 업소 등록 시: 업소 이름·주소·전화·텔레그램·사업자등록번호\n- 서류 사진 풀이: 사진은 풀이를 위해 Google(Gemini)로 보내 읽은 뒤 저장하지 않습니다. 풀이 결과는 이 폰에만 남습니다. 하루 사용 횟수만 서버에 기록합니다.\n- 외국인등록번호·여권번호는 모으지 않습니다.\n\n## 2. 쓰는 곳\n- 로그인과 계정 관리, 게시판 운영, 신고 처리와 부정 이용 방지, 업소 확인\n\n## 3. 보관 기간\n- 탈퇴하면 계정 정보를 바로 지웁니다. 올린 글은 남되 작성자 이름은 "탈퇴한 회원"으로 바뀝니다.\n- 신고 기록은 분쟁 대비로 1년 보관 후 지웁니다.\n\n## 4. 맡기는 곳 (처리 위탁·국외 이전)\n- Google LLC (Firebase: 로그인·데이터 저장·번역, Gemini: 서류 사진 풀이) — 데이터는 Google Cloud 서울 리전에 저장되며, 번역 등 일부 처리는 국외에서 이뤄질 수 있습니다.\n\n## 5. 이용자의 권리\n- 언제든 내 정보 열람·수정·삭제와 탈퇴를 요청할 수 있습니다.\n\n## 6. 개인정보 보호책임자\n- Свои 운영자, ' + CONTACT_EMAIL,
+             ru: '## Политика конфиденциальности\nДействует с декабря 2026 г.\n\n## 1. Какие данные мы собираем\n- Вход: адрес e-mail, идентификатор входа (Google или e-mail)\n- Выбранное вами имя, язык приложения, время согласия с правилами\n- Ваши вопросы, ответы и фото, список блокировок, жалобы\n- При добавлении места: название, адрес, телефон, Telegram, номер регистрации бизнеса\n- Разбор документов по фото: фото передаётся в Google (Gemini) только для прочтения и не сохраняется. Результат хранится только в вашем телефоне. На сервере учитывается лишь число запросов в день.\n- Номера ID-карты иностранца и паспорта мы не собираем.\n\n## 2. Для чего\n- Вход и управление аккаунтом, работа форума, рассмотрение жалоб и защита от злоупотреблений, проверка мест\n\n## 3. Срок хранения\n- После удаления аккаунта данные аккаунта удаляются сразу. Ваши сообщения остаются, но имя автора меняется на «Удалённый пользователь».\n- Жалобы хранятся 1 год на случай споров, затем удаляются.\n\n## 4. Передача обработки\n- Google LLC (Firebase: вход, хранение данных, перевод; Gemini: разбор документов по фото). Данные хранятся в регионе Google Cloud «Сеул»; часть обработки (например, перевод) может выполняться за пределами Кореи.\n\n## 5. Ваши права\n- Вы можете в любой момент запросить просмотр, исправление, удаление данных или удалить аккаунт.\n\n## 6. Ответственный за защиту данных\n- Администрация Свои, ' + CONTACT_EMAIL }
 };
 function openDoc(k, reopenConsent){
   push(k === 'terms' ? t('이용약관') : t('개인정보처리방침'), () => {
@@ -1415,7 +1686,8 @@ function renderMore(){
   box.innerHTML = acct +
     '<button class="row" id="mLang"><b>' + esc(t('언어')) + '</b><small>' + esc((LANGS.find(x => x.v === langNow()) || {}).name || '') + '</small></button>' +
     '<button class="row" id="mTheme"><b>' + esc(t('화면 테마')) + '</b><small>' + esc(t({ auto:'자동 (폰 설정)', light:'밝게', dark:'어둡게' }[themePref()])) + '</small></button>' +
-    '<button class="row" id="mCards"><b>' + esc(t('단어 카드')) + '</b><small>' + esc(t('한국 생활에 바로 쓰는 말')) + '</small></button>' +
+    '<button class="row" id="mDoc"><b>' + esc(t('서류 사진 풀이')) + '</b></button>' +
+    '<button class="row" id="mTalk"><b>' + esc(t(talkLang() === 'ko' ? '한국어로 말하기' : '러시아어로 말하기')) + '</b></button>' +
     '<button class="row" id="mNews"><b>' + esc(t('소식')) + '</b></button>' +
     '<button class="row" id="mBiz"><b>' + esc(t('내 업소')) + '</b><small>' + esc(t('업소 등록')) + '</small></button>' +
     (ME && ME.admin ? '<button class="row" id="mAdmin"><b>' + esc(t('운영자')) + '</b></button>' : '') +
@@ -1434,7 +1706,8 @@ function renderMore(){
     try{ localStorage.setItem('sv_theme', v); }catch(_){}
     applyTheme(); renderMore();
   };
-  $('mCards').onclick = openCardsHome;
+  $('mDoc').onclick = openExplain;
+  $('mTalk').onclick = openTalk;
   $('mNews').onclick = openNewsList;
   $('mBiz').onclick = openMyBiz;
   if($('mAdmin')) $('mAdmin').onclick = openAdmin;
